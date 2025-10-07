@@ -21,7 +21,7 @@ from psychopy_experiment_helpers.experiment_info import (
 )
 from psychopy_experiment_helpers.save_data import DataSaver
 from psychopy_experiment_helpers.screen import create_win
-from stroop_task.stroop_task import stroop_task
+from feedback_task.feedback_task import feedback_task
 
 __author__ = ["ociepkam", "filyp"]
 

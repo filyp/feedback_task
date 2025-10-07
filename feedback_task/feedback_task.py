@@ -9,7 +9,7 @@ from psychopy import core, event, logging, visual
 from unidecode import unidecode
 
 from psychopy_experiment_helpers.show_info import show_info
-from stroop_task.triggers import TriggerTypes, get_trigger_name
+from feedback_task.triggers import TriggerTypes, get_trigger_name
 
 message_dir = pathlib.Path(__file__).parent.parent / "messages"
 
