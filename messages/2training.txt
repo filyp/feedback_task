@@ -1,0 +1,7 @@
+Świetnie! W rzeczywistym zadaniu słowa będą wyświetlane na ekranie tylko przez krótki czas,
+a Ty będziesz mieć ograniczony czas na odpowiedź. 
+Reaguj tak szybko i dokładnie, jak to możliwe, wskazując kolor czcionki każdego słowa.
+
+Teraz wykonasz kilka prób treningowych, aby zobaczyć, jak to działa.
+
+(wciśnij spację aby kontynuować)

@@ -1,0 +1,51 @@
+# * EEG
+Send_EEG_trigg: True
+Trigger_type: "usb"  # "usb" or "parport"
+Actiview_reminder: True
+
+# * view parameters
+Screen_color: "black"
+Text_size: 0.04
+Text_font: "Arial"
+Text_color: "white"
+Fixation_size: 0.0435
+# # 6/360*2*3.14*50/30 / 6.4   (6.4 is the proportion of text width to height)
+Target_size: 0.0272
+# needs to be calibrated when Target_size or Fixation_size is changed
+Fixation_offset: 0.001
+
+Response_key: {
+    "red": "z",
+    "green": "x",
+    "blue": "n",
+    "yellow": "m",
+}
+
+# * experiment structure
+Experiment_blocks: [
+    {type: msg, file_name: _1greet.txt},
+    {type: msg, file_name: _2greet.txt},
+
+    {type: msg, file_name: 1training.txt},
+    {type: 1training},
+
+    {type: msg, file_name: 2training.txt},
+    {type: 2training},
+
+    {type: msg, file_name: 3training.txt},
+    {type: 3training},
+
+    {type: msg, file_name: 4training.txt},
+    {type: 4training},
+
+    {type: msg, file_name: pre_experiment.txt},
+    {type: experiment},
+    {type: break, num: 1},
+    {type: experiment},
+    {type: break, num: 2},
+    {type: experiment},
+    {type: break, num: 3},
+    {type: experiment},
+    {type: break, num: 4},
+    {type: experiment},
+    {type: msg, file_name: end.txt, duration: 5}]

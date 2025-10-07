@@ -1,0 +1,21 @@
+*.pyc
+.idea
+.vscode
+venv
+.venv
+results
+michal_test.zip
+michal_test
+Psychopy
+questionnaires/Screening
+questionnaires/Cechy afektywne a kontrola poznawcza_ Podejście neurofizjologiczne (Responses).xlsx
+questionnaires/processed responses.xlsx
+questionnaires/Cechy afektywne a kontrola poznawcza_ Podejście neurofizjologiczne (Responses)_old.xlsx
+questionnaires/processed responses_old.xlsx
+questionnaires/to_delete.txt
+questionnaires/Cechy afektywne a kontrola poznawcza_ Podejście neurofizjologiczne (Responses) old.xlsx
+questionnaires/processed responses old.xlsx
+Stroop.pcl
+Stroop.sce
+Triggers
+sonia_TriggMap backup.Markers
