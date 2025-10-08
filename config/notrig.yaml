@@ -4,22 +4,45 @@ Trigger_type: "usb"  # "usb" or "parport"
 Actiview_reminder: True
 
 # * view parameters
-Screen_color: "black"
+Screen_color: "grey"
 Text_size: 0.04
 Text_font: "Arial"
-Text_color: "white"
-Fixation_size: 0.0435
-# # 6/360*2*3.14*50/30 / 6.4   (6.4 is the proportion of text width to height)
-Target_size: 0.0272
-# needs to be calibrated when Target_size or Fixation_size is changed
-Fixation_offset: 0.001
+Text_color: "black"
 
-Response_key: {
-    "red": "z",
-    "green": "x",
-    "blue": "n",
-    "yellow": "m",
-}
+# Stimulus sizes 
+Screen_distance: 50  # cm
+Screen_height: 30  # cm
+# In degrees of visual angle
+Fixation_size: 0.5
+Star_size: 2
+Feedback_size: 2
+Face_feedback_size: 4
+Text_feedback_size: 2  # height, also in degrees
+
+Response_key: "space"
+
+# Timings
+ITI_min: 1.4
+ITI_max: 1.8
+Star_duration: 0.250
+Max_wait: 1.750
+Feedback_duration: 1.0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # * experiment structure
 Experiment_blocks: [

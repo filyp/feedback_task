@@ -110,7 +110,7 @@ logging.data("Experiment name: {}".format(experiment_name))
 exp = Experiment(config, data_saver)
 
 # Experiment
-stroop_task(exp, config, data_saver)
+feedback_task(exp, config, data_saver)
 
 # Save data
 data_saver.save_beh()
