@@ -98,6 +98,7 @@ if config.get("Actiview_reminder", False):
 participant_info, experiment_version = get_participant_info(
     config.get("Experiment_versions", False)
 )
+assert experiment_version != "-", "Experimenter name is not specified"
 participant_info = f"{experiment_version}_{participant_info}"
 config["Experiment_version"] = experiment_version
 
