@@ -3,7 +3,7 @@ import datetime
 from psychopy import gui
 
 
-def get_participant_info(ask_for_experiment_version=False):
+def get_participant_info(experiment_versions=False):
     """
     okienko dialogowe na podczas uruchomienia procedury
     :return: participant_info
@@ -11,8 +11,8 @@ def get_participant_info(ask_for_experiment_version=False):
     my_dlg = gui.Dlg(title="Participant info")
     my_dlg.addText("Informacje:")
     my_dlg.addField("ID:")
-    if ask_for_experiment_version:
-        my_dlg.addField("Wersja:", choices=["-", "A", "B"])
+    if experiment_versions:
+        my_dlg.addField("Wersja:", choices=experiment_versions)
 
     my_dlg.show()
     if not my_dlg.OK:
@@ -20,7 +20,7 @@ def get_participant_info(ask_for_experiment_version=False):
 
     part_id = my_dlg.data[0]
 
-    if ask_for_experiment_version:
+    if experiment_versions:
         version = my_dlg.data[1]
     else:
         version = None

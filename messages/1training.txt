@@ -1,5 +1,0 @@
-Teraz przejdziemy przez kilka przykładów,
-w których nazwa koloru pasuje do koloru czcionki.
-Proszę odpowiadać na podstawie koloru czcionki każdego słowa.
-
-(wciśnij spację aby kontynuować)

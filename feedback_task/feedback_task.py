@@ -66,7 +66,7 @@ def load_img(name, size, win, config):
     )
 
 
-def load_text(text, win , config):
+def load_text(text, win, config):
     return visual.TextStim(
         win=win,
         text=text,
@@ -75,7 +75,7 @@ def load_text(text, win , config):
         height=deg_to_height(config["Text_feedback_size"], config),
         font="Arial",
     )
-    
+
 
 def feedback_task(exp, config, data_saver):
     # unpack necessary objects for easier access
@@ -102,49 +102,53 @@ def feedback_task(exp, config, data_saver):
     # load stimuli
     fixation = load_img("dot.png", config["Fixation_size"], win, config)
     star = load_img("star.png", config["Star_size"], win, config)
+    too_slow = load_text("zbyt wolno", win, config)
+    too_fast = load_text("zbyt szybko", win, config)
+
+    _v = config["Experiment_version"]
     feedback = dict(
         number=dict(
-            pos=load_text("+10", win, config),
-            neg=load_text("-10", win, config),
-            neu=load_text("0", win, config),  # todo
+            pos=load_text("+1", win, config),
+            neg=load_text("-1", win, config),
+            neu=load_text("J", win, config),
         ),
         facesimple=dict(
             pos=load_img("smiley_face.png", config["Feedback_size"], win, config),
             neg=load_img("sad_face.png", config["Feedback_size"], win, config),
-            neu=load_img("noise.png", config["Feedback_size"], win, config),  # todo
+            neu=load_img("empty_face.png", config["Feedback_size"], win, config),
         ),
-        facecomplex=dict(
-            pos=None,
-            neg=None,
-            neu=None,
-        ),
+        # facecomplex=dict(
+        #     pos=load_img(f"{_v}/pos.png", config["Face_feedback_size"], win, config),
+        #     neg=load_img(f"{_v}/neg.png", config["Face_feedback_size"], win, config),
+        #     neu=load_img(f"{_v}/neu.png", config["Face_feedback_size"], win, config),
+        # ),
         symbol=dict(
             pos=load_img("tick.png", config["Feedback_size"], win, config),
             neg=load_img("cross.png", config["Feedback_size"], win, config),
-            neu=load_img("noise.png", config["Feedback_size"], win, config),  # todo
+            neu=load_img("equal.png", config["Feedback_size"], win, config),
         ),
         color=dict(
             pos=load_img("green_square.png", config["Feedback_size"], win, config),
             neg=load_img("red_square.png", config["Feedback_size"], win, config),
-            neu=load_img("black_square.png", config["Feedback_size"], win, config),  # todo
+            neu=load_img("blue_square.png", config["Feedback_size"], win, config),
         ),
         text=dict(
             pos=load_text("dobrze", win, config),
             neg=load_text("błędnie", win, config),
-            neu=load_text("xxxxxx", win, config),  # todo
+            neu=load_text("żyrafa", win, config),
+        ),
+        training=dict(
+            pos=load_img("thumbs_up.png", config["Feedback_size"], win, config),
+            neg=load_img("thumbs_down.png", config["Feedback_size"], win, config),
+            neu=None,
         ),
     )
-    
-    block_order = list(feedback.keys())
+
+    block_order = config["Feedback_types"]
     random.shuffle(block_order)
     logging.data(f"Block order: {block_order}")
 
-
-    allowed_error = 0.1
-    block_num = -1
-
-
-    def trial():
+    def trial(speed_feedback, neutral_feedback=False):
         nonlocal allowed_error
 
         # ! open trial
@@ -187,7 +191,11 @@ def feedback_task(exp, config, data_saver):
         data_saver.check_exit()
 
         # ! wait for press
-        keys = event.waitKeys(keyList=[config["Response_key"]], maxWait=config["Max_wait"], timeStamped=clock)
+        keys = event.waitKeys(
+            keyList=[config["Response_key"]],
+            maxWait=config["Max_wait"],
+            timeStamped=clock,
+        )
         if keys is not None:
             assert len(keys) == 1
             assert keys[0][0] == config["Response_key"]
@@ -196,21 +204,22 @@ def feedback_task(exp, config, data_saver):
             trigger_handler.prepare_trigger(trigger_name)
             trigger_handler.send_trigger()
         data_saver.check_exit()
-        
+
         if trial["rt"] == "-":
             trial["feedback"] = "neg"
             trial["acc"] = -1
         else:
-            if abs(trial["rt"] - 1) <= allowed_error:
+            if abs(trial["rt"] - 1) <= allowed_error / 1000:
                 trial["feedback"] = "pos"
                 trial["acc"] = 1
-                allowed_error -= 0.010
+                allowed_error -= 10
             else:
                 trial["feedback"] = "neg"
                 trial["acc"] = 0
-                allowed_error += 0.010
-        
-        # todo here optionally choose to display neutral feedback
+                allowed_error += 10
+
+        if neutral_feedback:
+            trial["feedback"] = "neu"
 
         # ! draw feedback
         feedback_stim = feedback[block_type][trial["feedback"]]
@@ -229,7 +238,26 @@ def feedback_task(exp, config, data_saver):
         feedback_stim.setAutoDraw(False)
         win.flip()
         data_saver.check_exit()
-        
+
+        if speed_feedback and trial["feedback"] == "neg":
+            # ! draw speed feedback
+            if trial["rt"] > 1:
+                s_feedback_stim = too_slow
+                s_feedback_trig = TriggerTypes.TOO_SLOW
+            else:
+                s_feedback_stim = too_fast
+                s_feedback_trig = TriggerTypes.TOO_FAST
+
+            trigger_name = get_trigger_name(s_feedback_trig)
+            trigger_handler.prepare_trigger(trigger_name)
+            s_feedback_stim.setAutoDraw(True)
+            win.flip()
+            trigger_handler.send_trigger()
+            core.wait(config["Speed_feedback_duration"])
+            # hide feedback
+            s_feedback_stim.setAutoDraw(False)
+            win.flip()
+            data_saver.check_exit()
 
         # save beh
         data_saver.beh.append(trial)
@@ -237,28 +265,48 @@ def feedback_task(exp, config, data_saver):
 
         logging.data("Trial data: {}\n".format(trial))
         logging.flush()
-        
 
+    # ! greeting texts
+    for greeting_text in config["Greeting_texts"]:
+        show_info(exp, greeting_text, duration=None)
 
+    # ! training block
+    block_num = 0  # block 0 is training
+    block_type = "training"
+    allowed_error = 100  # in milliseconds
+    for trial_num in range(config["N_train_trials"]):
+        trial(speed_feedback=True)
 
+    show_info(exp, config["Post_training_text"], duration=None)
 
-
+    allowed_error = 100  # reset allowed error
     for _ in range(3):
         for block_type in block_order:
             block_num += 1
+            f_expl = config["Feedback_explanations"][block_type]
+            txt = config["New_block_text"].format(block_num=block_num, f_expl=f_expl)
+            show_info(exp, txt, duration=None)
+
+            # ! choose which trials will have neutral feedback
+            indexes = list(range(config["N_trials_per_block"]))
+            logging.data(f"Indexes: {indexes}")
+            indexes = random.sample(indexes, config["N_neutral_trials_per_block"])
+            logging.data(f"Indexes: {indexes}")
+            logging.flush()
 
             trigger_name = get_trigger_name(TriggerTypes.BLOCK_START)
             trigger_handler.prepare_trigger(trigger_name)
             trigger_handler.send_trigger()
-            logging.data("Entering block: {}".format(block_num))
-            logging.flush()
 
-            block_type = "text"   # todo remove this hard-code
+            for trial_num in range(config["N_trials_per_block"]):
+                trial(
+                    speed_feedback=config["Speed_feedback"],
+                    neutral_feedback=trial_num in indexes,
+                )
+    
+    show_info(exp, config["End_text"], duration=None)
 
-            for trial_num in range(50):
-                trial()
-
-
+    # todo record experimenter name somewhere
 
     # for block in config["Experiment_blocks"]:
     #     trigger_name = get_trigger_name(TriggerTypes.BLOCK_START, block)

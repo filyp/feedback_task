@@ -96,7 +96,7 @@ experiment_name = experiment_name + "_" + config_hash
 if config.get("Actiview_reminder", False):
     display_eeg_info()
 participant_info, experiment_version = get_participant_info(
-    config.get("Ask_for_experiment_version", False)
+    config.get("Experiment_versions", False)
 )
 config["Experiment_version"] = experiment_version
 
