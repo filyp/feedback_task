@@ -4,48 +4,88 @@ Trigger_type: "usb"  # "usb" or "parport"
 Actiview_reminder: True
 
 # * view parameters
-Screen_color: "black"
+Screen_color: "grey"
 Text_size: 0.04
 Text_font: "Arial"
-Text_color: "white"
-Fixation_size: 0.0435
-# # 6/360*2*3.14*50/30 / 6.4   (6.4 is the proportion of text width to height)
-Target_size: 0.0272
-# needs to be calibrated when Target_size or Fixation_size is changed
-Fixation_offset: 0.001
+Text_color: "black"
 
-Response_key: {
-    "red": "z",
-    "green": "x",
-    "blue": "n",
-    "yellow": "m",
-}
+# Stimulus sizes 
+Screen_distance: 50  # cm
+Screen_height: 30  # cm
+# In degrees of visual angle
+Fixation_size: 0.5
+Star_size: 2
+Feedback_size: 2
+Face_feedback_size: 4
+Text_feedback_size: 1.2  # height, also in degrees
 
-# * experiment structure
-Experiment_blocks: [
-    {type: msg, file_name: _1greet.txt},
-    {type: msg, file_name: _2greet.txt},
+# General settings
+Experiment_versions: ["-", "a", "m"]
+Response_key: "space"
+Speed_feedback: False  # whether to also tell people to go faster or slower
+N_trials_per_block: 50
+N_train_trials: 20
+N_neutral_trials_per_block: 8
+Feedback_types: ["number", "facesimple", "facecomplex", "symbol", "color", "text"]
 
-    {type: msg, file_name: 1training.txt},
-    {type: 1training},
+# Timings
+ITI_min: 1.4
+ITI_max: 1.8
+Star_duration: 0.250
+Max_wait: 1.750
+Feedback_duration: 1.0
+Speed_feedback_duration: 1.0
 
-    {type: msg, file_name: 2training.txt},
-    {type: 2training},
 
-    {type: msg, file_name: 3training.txt},
-    {type: 3training},
+Greeting_texts:
+  - |
+    Witaj w naszym badaniu!
 
-    {type: msg, file_name: 4training.txt},
-    {type: 4training},
+    (wciśnij spację aby kontynuować)
+  - |
+    Twoim zadaniem będzie szacowanie upływu jednej sekundy.
+    Staraj się wcisnąć spację dokładnie sekundę po pojawieniu się gwiazdki na ekranie.
 
-    {type: msg, file_name: pre_experiment.txt},
-    {type: experiment},
-    {type: break, num: 1},
-    {type: experiment},
-    {type: break, num: 2},
-    {type: experiment},
-    {type: break, num: 3},
-    {type: experiment},
-    {type: break, num: 4},
-    {type: experiment},
-    {type: msg, file_name: end.txt, duration: 5}]
+    (wciśnij spację aby kontynuować)
+  - |
+    Teraz przejdziemy przez kilka przykładów.
+    Po każdej próbie dostaniesz informację,
+    czy byłeś/byłaś wystarczająca blisko sekundy.
+
+    (wciśnij spację aby kontynuować)
+
+Post_training_text: |
+    Koniec treningu.
+
+    Teraz przechodzimy do właściwego zadania.
+    Ma ono 18 bloków, pomiędzy którymi będą przerwy.
+    Jeśli potrzebujesz się poruszyć, najlepiej wykorzystaj do tego przerwy.
+    Całe zadanie zajmie około godzinę.
+
+    (wciśnij spację aby kontynuować)
+
+New_block_text: |
+    Przerwa na odpoczynek.
+    
+    W kolejnym bloku, informacją zwrotną będą
+    {f_expl}.
+
+    (wciśnij spację aby rozpocząć blok {block_num}/18)
+
+End_text: |
+    Gratulacje! Badanie zakończyło się. Zaczekaj na osobę przeprowadzającą eksperyment.
+
+    (wciśnij spację aby zakończyć badanie)
+
+Feedback_explanations:
+  number: "liczy +1 albo -1"
+  facesimple: "uśmiechnięte albo smutne emotikony"
+  facecomplex: "uśmiechnięte albo smutne zdjęcia eksperymentatora"
+  symbol: "krzyżyki albo fajki"
+  color: "zielone albo czerwone kwadraty"
+  text: "słowa 'dobrze' albo 'błędnie'"
+
+
+
+
+
