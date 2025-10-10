@@ -98,6 +98,7 @@ if config.get("Actiview_reminder", False):
 participant_info, experiment_version = get_participant_info(
     config.get("Experiment_versions", False)
 )
+participant_info = f"{experiment_version}_{participant_info}"
 config["Experiment_version"] = experiment_version
 
 data_saver = DataSaver(participant_info, experiment_name, beh=[], triggers_list=[])

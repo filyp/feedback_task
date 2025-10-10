@@ -117,11 +117,11 @@ def feedback_task(exp, config, data_saver):
             neg=load_img("sad_face.png", config["Feedback_size"], win, config),
             neu=load_img("empty_face.png", config["Feedback_size"], win, config),
         ),
-        # facecomplex=dict(
-        #     pos=load_img(f"{_v}/pos.png", config["Face_feedback_size"], win, config),
-        #     neg=load_img(f"{_v}/neg.png", config["Face_feedback_size"], win, config),
-        #     neu=load_img(f"{_v}/neu.png", config["Face_feedback_size"], win, config),
-        # ),
+        facecomplex=dict(
+            pos=load_img(f"{_v}/pos.png", config["Face_feedback_size"], win, config),
+            neg=load_img(f"{_v}/neg.png", config["Face_feedback_size"], win, config),
+            neu=load_img(f"{_v}/neu.png", config["Face_feedback_size"], win, config),
+        ),
         symbol=dict(
             pos=load_img("tick.png", config["Feedback_size"], win, config),
             neg=load_img("cross.png", config["Feedback_size"], win, config),
@@ -241,7 +241,7 @@ def feedback_task(exp, config, data_saver):
 
         if speed_feedback and trial["feedback"] == "neg":
             # ! draw speed feedback
-            if trial["rt"] > 1:
+            if trial["rt"] == "-" or trial["rt"] > 1:
                 s_feedback_stim = too_slow
                 s_feedback_trig = TriggerTypes.TOO_SLOW
             else:
@@ -305,8 +305,6 @@ def feedback_task(exp, config, data_saver):
                 )
     
     show_info(exp, config["End_text"], duration=None)
-
-    # todo record experimenter name somewhere
 
     # for block in config["Experiment_blocks"]:
     #     trigger_name = get_trigger_name(TriggerTypes.BLOCK_START, block)

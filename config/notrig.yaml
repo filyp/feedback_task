@@ -26,8 +26,7 @@ Speed_feedback: False  # whether to also tell people to go faster or slower
 N_trials_per_block: 5  # 50 todo
 N_train_trials: 5  # 20 todo
 N_neutral_trials_per_block: 1  # 8 todo
-# Feedback_types: ["number", "facesimple", "facecomplex", "symbol", "color", "text"]
-Feedback_types: ["number", "facesimple", "symbol", "color", "text"]
+Feedback_types: ["number", "facesimple", "facecomplex", "symbol", "color", "text"]
 
 # Timings
 ITI_min: 1.4
