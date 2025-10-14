@@ -1,12 +1,7 @@
 import random
-from collections import OrderedDict
-from copy import copy
 from pathlib import Path
-from textwrap import dedent
 
-import numpy as np
 from psychopy import core, event, logging, visual
-from unidecode import unidecode
 
 from feedback_task.triggers import TriggerTypes, get_trigger_name
 from psychopy_experiment_helpers.show_info import show_info
@@ -22,36 +17,6 @@ color_dict = dict(
 )
 
 
-# def prepare_stimuli(win, config):
-#     incongruent_trials = []
-#     congruent_trials = []
-#     for text in ["CZERWONY", "ZIELONY", "NIEBIESKI", "ŻÓŁTY"]:
-#         for color in ["red", "green", "blue", "yellow"]:
-#             name = color + "_" + unidecode(text.lower())
-#             stimulus = visual.TextStim(
-#                 win=win,
-#                 text=text,
-#                 color=color_dict[color],
-#                 height=config["Target_size"],
-#                 name=name,
-#             )
-#             congruent = name in ["red_czerwony", "green_zielony", "blue_niebieski", "yellow_zolty" ]  # fmt: skip
-#             trial = dict(
-#                 target=stimulus,
-#                 target_name=name,
-#                 type="congruent" if congruent else "incongruent",
-#                 font_color=color,
-#                 text=text,
-#                 correct_key=config["Response_key"][color],
-#             )
-#             if congruent:
-#                 congruent_trials.append(trial)
-#             else:
-#                 incongruent_trials.append(trial)
-
-#     return congruent_trials, incongruent_trials
-
-
 def deg_to_height(deg, config):
     size_in_cm = (deg / 360) * (2 * 3.1415 * config["Screen_distance"])
     return size_in_cm / config["Screen_height"]
@@ -61,7 +26,7 @@ def load_img(name, size, win, config):
     return visual.ImageStim(
         win=win,
         image=stimuli_dir / name,
-        size=deg_to_height(size, config),
+        size=(None, deg_to_height(size, config)),
         interpolate=True,
     )
 
@@ -72,8 +37,61 @@ def load_text(text, win, config):
         text=text,
         color="black",
         # height=config["Text_feedback_font_size"],
-        height=deg_to_height(config["Text_feedback_size"], config),
+        height=deg_to_height(config["Speed_feedback_size"], config),
         font="Arial",
+    )
+    
+
+def load_feedback_stimuli(win, config):
+    _v = config["Experiment_version"]
+    return dict(
+        number=dict(
+            # pos=load_text("+1", win, config),
+            # neg=load_text("-1", win, config),
+            # neu=load_text("J", win, config),
+            pos=load_img("points_pos_Plus1.png", config["Feedback_size"], win, config),
+            neg=load_img("points_neg_Minus1.png", config["Feedback_size"], win, config),
+            neu=load_img("points_neut_J.png", config["Feedback_size"], win, config),
+        ),
+        facesimple=dict(
+            # pos=load_img("smiley_face.png", config["Feedback_size"], win, config),
+            # neg=load_img("sad_face.png", config["Feedback_size"], win, config),
+            # neu=load_img("empty_face.png", config["Feedback_size"], win, config),
+            pos=load_img("simple_pos_smiley_face.png", config["Feedback_size"], win, config),
+            neg=load_img("simple_neg_sad_face.png", config["Feedback_size"], win, config),
+            neu=load_img("simple_neut_empty_face.png", config["Feedback_size"], win, config),
+        ),
+        facecomplex=dict(
+            pos=load_img(f"{_v}/pos.png", config["Face_feedback_size"], win, config),
+            neg=load_img(f"{_v}/neg.png", config["Face_feedback_size"], win, config),
+            neu=load_img(f"{_v}/neu.png", config["Face_feedback_size"], win, config),
+        ),
+        symbol=dict(
+            # pos=load_img("tick.png", config["Feedback_size"], win, config),
+            # neg=load_img("cross.png", config["Feedback_size"], win, config),
+            # neu=load_img("equal.png", config["Feedback_size"], win, config),
+            pos=load_img("symbol_pos_tick.png", config["Feedback_size"], win, config),
+            neg=load_img("symbol_neg_cross.png", config["Feedback_size"], win, config),
+            neu=load_img("symbol_neut_equal.png", config["Feedback_size"], win, config),
+        ),
+        color=dict(
+            pos=load_img("green_square.png", config["Feedback_size"], win, config),
+            neg=load_img("red_square.png", config["Feedback_size"], win, config),
+            neu=load_img("blue_square.png", config["Feedback_size"], win, config),
+        ),
+        text=dict(
+            # pos=load_text("dobrze", win, config),
+            # neg=load_text("błędnie", win, config),
+            # neu=load_text("żyrafa", win, config),
+            pos=load_img("text_pos_dobrze.png", config["Text_feedback_size"], win, config),
+            neg=load_img("text_neg_blednie.png", config["Text_feedback_size"], win, config),
+            neu=load_img("text_neut_probnie.png", config["Text_feedback_size"], win, config),
+        ),
+        training=dict(
+            pos=load_img("thumbs_up.png", config["Feedback_size"], win, config),
+            neg=load_img("thumbs_down.png", config["Feedback_size"], win, config),
+            neu=None,
+        ),
     )
 
 
@@ -104,45 +122,13 @@ def feedback_task(exp, config, data_saver):
     star = load_img("star.png", config["Star_size"], win, config)
     too_slow = load_text("zbyt wolno", win, config)
     too_fast = load_text("zbyt szybko", win, config)
-
-    _v = config["Experiment_version"]
-    feedback = dict(
-        number=dict(
-            pos=load_text("+1", win, config),
-            neg=load_text("-1", win, config),
-            neu=load_text("J", win, config),
-        ),
-        facesimple=dict(
-            pos=load_img("smiley_face.png", config["Feedback_size"], win, config),
-            neg=load_img("sad_face.png", config["Feedback_size"], win, config),
-            neu=load_img("empty_face.png", config["Feedback_size"], win, config),
-        ),
-        facecomplex=dict(
-            pos=load_img(f"{_v}/pos.png", config["Face_feedback_size"], win, config),
-            neg=load_img(f"{_v}/neg.png", config["Face_feedback_size"], win, config),
-            neu=load_img(f"{_v}/neu.png", config["Face_feedback_size"], win, config),
-        ),
-        symbol=dict(
-            pos=load_img("tick.png", config["Feedback_size"], win, config),
-            neg=load_img("cross.png", config["Feedback_size"], win, config),
-            neu=load_img("equal.png", config["Feedback_size"], win, config),
-        ),
-        color=dict(
-            pos=load_img("green_square.png", config["Feedback_size"], win, config),
-            neg=load_img("red_square.png", config["Feedback_size"], win, config),
-            neu=load_img("blue_square.png", config["Feedback_size"], win, config),
-        ),
-        text=dict(
-            pos=load_text("dobrze", win, config),
-            neg=load_text("błędnie", win, config),
-            neu=load_text("żyrafa", win, config),
-        ),
-        training=dict(
-            pos=load_img("thumbs_up.png", config["Feedback_size"], win, config),
-            neg=load_img("thumbs_down.png", config["Feedback_size"], win, config),
-            neu=None,
-        ),
-    )
+    # load feedback stimuli
+    feedback = load_feedback_stimuli(win, config)
+    demo_feedback = load_feedback_stimuli(win, config)
+    for feedback_type in config["Feedback_types"]:
+        demo_feedback[feedback_type]["pos"].pos = (-0.25, -0.25)
+        demo_feedback[feedback_type]["neg"].pos = (0, -0.25)
+        demo_feedback[feedback_type]["neu"].pos = (0.25, -0.25)
 
     block_order = config["Feedback_types"]
     random.shuffle(block_order)
@@ -287,6 +273,11 @@ def feedback_task(exp, config, data_saver):
     for _ in range(3):
         for block_type in block_order:
             block_num += 1
+
+            # ! show new block text and demo feedback
+            demo_feedback[block_type]["pos"].draw()  # draws just for one frame, frame shown inside show_info
+            demo_feedback[block_type]["neg"].draw()
+            demo_feedback[block_type]["neu"].draw()
             f_expl = config["Feedback_explanations"][block_type]
             txt = config["New_block_text"].format(block_num=block_num, f_expl=f_expl)
             show_info(exp, txt, duration=None)

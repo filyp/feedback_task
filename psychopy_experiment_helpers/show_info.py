@@ -29,7 +29,7 @@ def show_info(
         event.clearEvents()
         exp.mouse.clickReset()
         while True:
-            _, press_times = exp.mouse.getPressed(getTime=True)
+            # _, press_times = exp.mouse.getPressed(getTime=True)
             keys = event.getKeys(keyList=["f7", "return", "space"])
 
             if "f7" in keys:
