@@ -13,8 +13,9 @@ class TriggerTypes:
 
 def get_trigger_name(
     trigger_type,
-    # block,
+    block_num,
+    block_type,
 ):
     # response will be added later, on close_trial
     # return "*".join([trigger_type, block_type[:3], ""])
-    return "*".join([trigger_type, ""])
+    return "*".join([trigger_type, str(block_num), block_type, ""])

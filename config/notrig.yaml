@@ -33,6 +33,7 @@ ITI_min: 1.4
 ITI_max: 1.8
 Star_duration: 0.250
 Max_wait: 1.750
+Pre_feedback_blank_duration: 1.0
 Feedback_duration: 1.0
 Speed_feedback_duration: 1.0
 

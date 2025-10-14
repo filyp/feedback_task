@@ -148,7 +148,7 @@ def feedback_task(exp, config, data_saver):
     random.shuffle(block_order)
     logging.data(f"Block order: {block_order}")
 
-    def trial(speed_feedback, neutral_feedback=False):
+    def run_trial(speed_feedback, neutral_feedback=False):
         nonlocal allowed_error
 
         # ! open trial
@@ -164,7 +164,7 @@ def feedback_task(exp, config, data_saver):
         trial["iti_time"] = random.uniform(config["ITI_min"], config["ITI_max"])
 
         # ! draw inter-trial interval fixation
-        trigger_name = get_trigger_name(TriggerTypes.FIXATION)
+        trigger_name = get_trigger_name(TriggerTypes.FIXATION, block_num, block_type)
         trigger_handler.prepare_trigger(trigger_name)
         fixation.setAutoDraw(True)
         win.flip()
@@ -174,7 +174,7 @@ def feedback_task(exp, config, data_saver):
         data_saver.check_exit()
 
         # ! draw star (start)
-        trigger_name = get_trigger_name(TriggerTypes.STAR_START)
+        trigger_name = get_trigger_name(TriggerTypes.STAR_START, block_num, block_type)
         trigger_handler.prepare_trigger(trigger_name)
         event.clearEvents()
         win.callOnFlip(clock.reset)
@@ -183,7 +183,7 @@ def feedback_task(exp, config, data_saver):
         trigger_handler.send_trigger()
         core.wait(config["Star_duration"])
 
-        trigger_name = get_trigger_name(TriggerTypes.STAR_END)
+        trigger_name = get_trigger_name(TriggerTypes.STAR_END, block_num, block_type)
         trigger_handler.prepare_trigger(trigger_name)
         star.setAutoDraw(False)
         win.flip()
@@ -200,9 +200,13 @@ def feedback_task(exp, config, data_saver):
             assert len(keys) == 1
             assert keys[0][0] == config["Response_key"]
             trial["rt"] = keys[0][1]
-            trigger_name = get_trigger_name(TriggerTypes.REACTION)
+            trigger_name = get_trigger_name(TriggerTypes.REACTION, block_num, block_type)
             trigger_handler.prepare_trigger(trigger_name)
             trigger_handler.send_trigger()
+        data_saver.check_exit()
+        
+        # ! wait with a black screen
+        core.wait(config["Pre_feedback_blank_duration"])
         data_saver.check_exit()
 
         if trial["rt"] == "-":
@@ -228,7 +232,7 @@ def feedback_task(exp, config, data_saver):
             "neg": TriggerTypes.FEEDBACK_NEG,
             "neu": TriggerTypes.FEEDBACK_NEU,
         }[trial["feedback"]]
-        trigger_name = get_trigger_name(feedback_trig)
+        trigger_name = get_trigger_name(feedback_trig, block_num, block_type)
         trigger_handler.prepare_trigger(trigger_name)
         feedback_stim.setAutoDraw(True)
         win.flip()
@@ -248,7 +252,7 @@ def feedback_task(exp, config, data_saver):
                 s_feedback_stim = too_fast
                 s_feedback_trig = TriggerTypes.TOO_FAST
 
-            trigger_name = get_trigger_name(s_feedback_trig)
+            trigger_name = get_trigger_name(s_feedback_trig, block_num, block_type)
             trigger_handler.prepare_trigger(trigger_name)
             s_feedback_stim.setAutoDraw(True)
             win.flip()
@@ -275,7 +279,7 @@ def feedback_task(exp, config, data_saver):
     block_type = "training"
     allowed_error = 100  # in milliseconds
     for trial_num in range(config["N_train_trials"]):
-        trial(speed_feedback=True)
+        run_trial(speed_feedback=True)
 
     show_info(exp, config["Post_training_text"], duration=None)
 
@@ -294,12 +298,12 @@ def feedback_task(exp, config, data_saver):
             logging.data(f"Indexes: {indexes}")
             logging.flush()
 
-            trigger_name = get_trigger_name(TriggerTypes.BLOCK_START)
+            trigger_name = get_trigger_name(TriggerTypes.BLOCK_START, block_num, block_type)
             trigger_handler.prepare_trigger(trigger_name)
             trigger_handler.send_trigger()
 
             for trial_num in range(config["N_trials_per_block"]):
-                trial(
+                run_trial(
                     speed_feedback=config["Speed_feedback"],
                     neutral_feedback=trial_num in indexes,
                 )
