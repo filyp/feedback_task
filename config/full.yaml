@@ -11,7 +11,7 @@ Text_font: "Arial"
 Text_color: "black"
 
 # Stimulus sizes 
-Screen_distance: 50  # cm
+Screen_distance: 65  # cm
 Screen_height: 30  # cm
 # In degrees of visual angle
 Fixation_size: 0.5
@@ -22,7 +22,7 @@ Text_feedback_size: 1.2  # height, also in degrees
 Speed_feedback_size: 1.2  # height, also in degrees
 
 # General settings
-Experiment_versions: ["-", "a", "m"]
+Experiment_versions: ["-", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 Response_key: "space"
 Speed_feedback: False  # whether to also tell people to go faster or slower
 N_trials_per_block: 50
