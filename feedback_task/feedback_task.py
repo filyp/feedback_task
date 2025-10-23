@@ -293,6 +293,9 @@ def feedback_task(exp, config, data_saver):
             trigger_handler.prepare_trigger(trigger_name)
             trigger_handler.send_trigger()
 
+            # * add some wait between BLOCK_START trigger and first fixation trigger
+            core.wait(1)
+
             for trial_num in range(config["N_trials_per_block"]):
                 run_trial(
                     speed_feedback=config["Speed_feedback"],
