@@ -27,20 +27,21 @@ class TriggerHandler:
     def __init__(self, port_eeg, data_saver):
         self.port_eeg = port_eeg
         self.data_saver = data_saver
-        self.trigger_no = 0
+        self.trigger_no = 1
         self.trial = None
 
     def prepare_trigger(self, trigger_name):
         # logging.data("Preparing trigger: {}".format(trigger_name))
         # logging.flush()
-        self.trigger_no += 1
-        if self.trigger_no == 9:
-            self.trigger_no = 1
         line = str(self.trigger_no) + ":" + trigger_name
         if self.trial is not None:
             self.trial.append(line)
         else:
             self.data_saver.triggers_list.append(line)
+
+        self.trigger_no *= 2
+        if self.trigger_no == 256:
+            self.trigger_no = 1
 
     def send_trigger(self):
         # if self.trial is not None:
